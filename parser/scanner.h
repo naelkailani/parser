@@ -2,6 +2,10 @@
 #ifndef __SCANNER__H
 #define __SCANNER__H
 
+#include<string>
+#include"fd.h"
+#include<queue>
+using namespace std;
 typedef enum
 {
 	/* Literals */
@@ -23,22 +27,6 @@ typedef enum
 }
 LEXEME_TYPE;
 
-int keys = 28; /* number of keywords */
-char *keyword[] = {
-"and", "begin", "bool", "by", "constant",
-"do", "else", "end", "false", "fi", "float", "for", "from",
-"function", "if", "integer", "not", "od", "or", "procedure",
-"program", "read", "return", "string", "then", "to", "true",
-"var", "while", "write"
-};
-
-LEXEME_TYPE key_type[] = {
-kw_and, kw_begin, kw_boolean, kw_by, kw_constant,
-kw_do, kw_else, kw_end, kw_false, kw_fi,kw_float,
-kw_for, kw_from, kw_function, kw_if, kw_integer, kw_not,
-kw_od, kw_or, kw_procedure, kw_program,kw_read, kw_return,
-kw_string, kw_then, kw_to, kw_true, kw_var, kw_while, kw_write,
-};
 //Token types enumeration
 
 // Definition of TOKEN, you can use a clase if you  want 
@@ -75,7 +63,7 @@ class SCANNER{
 
 	SCANNER(string filename);
 	//SCANNER (FileDescriptor *fd);
-	TOKEN* Scan(); 
+	queue<TOKEN*> * Scan(); 
     	//TOKEN *Scan(FileDescriptor *fd);
 
 };

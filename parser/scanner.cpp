@@ -3,13 +3,14 @@
 #include"fd.h"
 #include<queue>
 using namespace std;
-char *keyword  = {
+char *keyword []= {
 "and", "begin", "bool", "by", "constant",
 "do", "else", "end", "false", "fi", "float", "for", "from",
 "function", "if", "integer", "not", "od", "or", "procedure",
 "program", "read", "return", "string", "then", "to", "true",
 "var", "while", "write"
 };
+
 LEXEME_TYPE key_type[] = {
 kw_and, kw_begin, kw_boolean, kw_by, kw_constant,
 kw_do, kw_else, kw_end, kw_false, kw_fi,kw_float,
@@ -17,7 +18,6 @@ kw_for, kw_from, kw_function, kw_if, kw_integer, kw_not,
 kw_od, kw_or, kw_procedure, kw_program,kw_read, kw_return,
 kw_string, kw_then, kw_to, kw_true, kw_var, kw_while, kw_write,
 };
-
 	string spaces = " \n\r\t";
 	string operators = "()[]:.;,=+-*/!<>";
 	string delimiters=spaces+operators;
@@ -197,11 +197,11 @@ void SCANNER::eatComment(FileDescriptor & f) {
 SCANNER::SCANNER(string fileName){
     file=new FileDescriptor(fileName.data());
 }
-TOKEN * SCANNER::Scan() {
+queue<TOKEN *> * SCANNER::Scan() {
 	string spaces = " \n\r\t";
 	string operators = "()[]:.;,=+-*/!<>";
 	string delimiters=spaces+operators;
-	queue<TOKEN *> q;
+	queue<TOKEN *> * q=new queue<TOKEN *>();
 		
 	char c;
 	c = file->GetChar();
@@ -211,7 +211,7 @@ TOKEN * SCANNER::Scan() {
 			file->UngetChar(c);
 			t=getId(*file);
 			toKeyWord(t);
-			q.push(t);
+			q->push(t);
 			if (t->type == lx_identifier) {
 				cout << "identifier : " << t->str.data() << endl;
 			}
@@ -223,7 +223,7 @@ TOKEN * SCANNER::Scan() {
 		else if (isNumber(c)) {
 			file->UngetChar(c);
 			t = getNumber(*file);
-					q.push(t);
+					q->push(t);
 			if (t->type == lx_integer)
 				cout << "integer :" << t->value << endl;
 			else
@@ -231,7 +231,7 @@ TOKEN * SCANNER::Scan() {
 		}
 		else if (c == '\"') {
 			t = getString(*file);
-					q.push(t);
+					q->push(t);
 			cout << "string :" << t->str.data() << endl;
 
 		}
@@ -241,18 +241,18 @@ TOKEN * SCANNER::Scan() {
 			if (c == ':') {
 				if (nextEqual) {
 					t->type = lx_colon_eq;
-					q.push(t);
+					q->push(t);
 				}
 				else {
 					t->type = lx_colon;
-					q.push(t);
+					q->push(t);
 				}
 
 			}
 			else if (c == '!') {
 				if (nextEqual) {
 					t->type = lx_neq;
-					q.push(t);
+					q->push(t);
 				}
 				else
 					file->ReportError("unvalid operator");
@@ -261,34 +261,34 @@ TOKEN * SCANNER::Scan() {
 			else if (c == '<') {
 				if (nextEqual) {
 					t->type = lx_le;
-					q.push(t);
+					q->push(t);
 				}
 				else {
 					t->type = lx_lt;
-					q.push(t);
+					q->push(t);
 				}
 
 			}
 			else if (c == '>') {
 				if (nextEqual) {
 					t->type = lx_ge;
-					q.push(t);
+					q->push(t);
 				}
 				else {
 					t->type = lx_gt;
-					q.push(t);
+					q->push(t);
 				}
 
 			}
 			else if (c == '-') {
 				t->type = lx_minus;
-					q.push(t);
+					q->push(t);
 
 			}
 			else {
 				int pos = operators.find(c);
 					t->type = (LEXEME_TYPE)(34 + pos);
-					q.push(t);
+					q->push(t);
 			}
 			cout << "operator: " << c << endl;
 		}
@@ -316,5 +316,5 @@ TOKEN * SCANNER::Scan() {
 			}
 	
   
-	return 0;
+	return q;
 }

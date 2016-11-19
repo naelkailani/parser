@@ -2,7 +2,7 @@ integer x=3;## it is a comment for integer x=3 ## integer x;
 
 boolean z;
 
-string s = "hello";
+string s := "hello";
 
 z   =             true;
 read abc Read <xyz>*-+

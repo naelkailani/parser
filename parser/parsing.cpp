@@ -57,7 +57,7 @@ AST * parse_decl_list()
     
     if( match(getCurrentToken(),lx_semicolon,"expected semicolon") )
     {
-        
+        decl_list_ast = make_ast_node(?);
         decl_list_ast = parse_decl_list();
     }
     else

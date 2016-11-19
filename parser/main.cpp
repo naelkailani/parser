@@ -13,7 +13,8 @@
 using namespace std;
 /* symbol.h */
 //A symbol table entry holds a string and any other values that a programmer wants to add to it. */
-typedef enum{
+typedef enum
+{
 	type_integer,
 	type_string,
 	type_boolean,
@@ -22,14 +23,16 @@ typedef enum{
 } j_type;
 /* printable versions of their names. */
 static char *type_names[] = {"integer", "string", "boolean", "float", "none"};
-typedef enum {
+typedef enum
+{
     	ste_var, // a variable
 	ste_const, //A constant
 	ste_routine, //A routine
 	ste_undefined // ste_entry
 } ste_entry_type;
 // You may change the following definition to a class
-class SymbolTableEntry{
+class SymbolTableEntry
+{
 public:
 	SymbolTableEntry(){
 	}
@@ -88,8 +91,8 @@ public:
 		} routine;
 	} f;
 }; //end of SymbolTableEntry definition
-class SymbolTable{
 
+class SymbolTable{
     
 public:
     SymbolTable * prev;
@@ -102,6 +105,7 @@ public:
 	}
 
 };
+
 class Scope{
 	SymbolTable * head;
 	public :SymbolTable * current;

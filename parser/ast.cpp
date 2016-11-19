@@ -5,7 +5,7 @@ arguments are the fields of that type of node, in order. */
 
 
 #include <stdio.h>
-#include <varargs.h>
+#include <stdarg.h>
 //#include "types.h"
 #include "fd.h"
 #include "symbol.h"
@@ -15,7 +15,9 @@ static void nl_indent (FILE *, int);
 static void p_a_n (FILE *, AST *, int);
 static void print_ast_list (FILE *, ast_list *, char *, int);
 static void print_ste_list (FILE *, ste_list *, char *, char *, int);
-
+static string ste_name(SymbolTableEntry * e){
+    return e->name;
+}
 ///////////////////////////////////////////////////////////////////////
 // page 2
 AST * make_ast_node (AST_type type,...)
@@ -79,12 +81,12 @@ AST * make_ast_node (AST_type type,...)
 
 		case ast_call:
 			n->f.a_call.callee = va_arg (ap, SymbolTableEntry *);
-			n->f.a.c_all.arg_list = va_arg (ap, ast_list *);
+			n->f.a_call.arg_list = va_arg (ap, ast_list *);
 			break;
 
 		case ast_block:
-			n->f.a.block.vars = va_arg (ap, ste_list *);
-			n->f.a.block.stmts = va_arg (ap, ast_list *);
+			n->f.a_block.vars = va_arg (ap, ste_list *);
+			n->f.a_block.stmts = va_arg (ap, ast_list *);
 		break;
 
 		case ast_return:
@@ -153,7 +155,7 @@ int eval_ast_expr (FileDescriptor *fd, AST *n)
 	{
 	case ast_var:
 		if (n->f.a_var.var->entry_type == ste_const)
-			return (ste_const_value (n->f.a_var.var);
+			return ((n->f.a_var.var->f.constant.value));
 		else
 			fd->ReportError( "Cannot use variables in constant expressions");
 		return (0);;
@@ -230,22 +232,22 @@ switch (n->type)
 {
 // new page 6
 	case ast_var_decl:
-		fprintf (f,"var %s: %s;", ste_name (n->f.a_var_decl.name),
+		fprintf (f,"var %s: %s;", ste_name (n->f.a_var_decl.name).c_str(),
                     type_names[n->f.a_var_decl.type]);
 		 nl_indent (f, d);
 		break;
 	case ast_const_decl:
-		fprintf (f, "constant %s = %d;", ste_name (n->f.a_const_decl.name),
+		fprintf (f, "constant %s = %d;", ste_name (n->f.a_const_decl.name).c_str(),
 					n->f.a_const_decl.value);
 		nl_indent (f, d); 
 		break;
 	case ast_routine_decl:
 		{ 
 			if (n->f.a_routine_decl.result_type == type_none)
-				fprintf (f, "procedure %s (", ste_name (n->f.a_routine_decl.nam));
+				fprintf (f, "procedure %s (", ste_name (n->f.a_routine_decl.name).c_str());
 			else 
-				fprintf (f, "function %s (", ste_name (n->f.a_routine_decl.name));
-			print_ste_list (f, n->f.a_routine_decl.fomals, "", ", ", -1);
+				fprintf (f, "function %s (", ste_name (n->f.a_routine_decl.name).c_str());
+			print_ste_list (f, n->f.a_routine_decl.formals, "", ", ", -1);
 			if (n->f.a_routine_decl.result_type == type_none){
 				fprintf (f, ")");
 				nl_indent (f, d + 2);
@@ -260,7 +262,7 @@ switch (n->type)
 		    break;
 		}
 	case ast_assign:
-		fprintf (f, "%s := ", ste_name (n->f.a_assign.lhs));
+		fprintf (f, "%s := ", ste_name (n->f.a_assign.lhs).c_str());
 		p_a_n (f, n->f.a_assign.rhs, d);
 		break;
 	case ast_if:
@@ -273,7 +275,7 @@ switch (n->type)
 			nl_indent (f, d);
 			fprintf (f, "else");
 			nl_indent (f, d + 2);
-			p_a_n (f, n->f.a_if.alten, d + 2);
+			p_a_n (f, n->f.a_if.altern, d + 2);
 		}
 	    break;
 	case ast_while:
@@ -286,10 +288,10 @@ switch (n->type)
 		fprintf (f, "od");// new page
 		break;
 	case ast_for:
-		fprintf (f, "for %s = ", ste_name (n->f.a_for.var));
-		p_a_n (f, n->f.a_for.lower_ bound, d); 
+		fprintf (f, "for %s = ", ste_name (n->f.a_for.var).c_str());
+		p_a_n (f, n->f.a_for.lower_bound, d);
 		fprintf (f, " to ");
-        p_a_n (f, n->f.a_ for.upper_ bound, d);
+        p_a_n (f, n->f.a_for.upper_bound, d);
 		fprintf (f, " do");
 		nl_indent (f, d + 2);
 		p_a_n (f, n->f.a_for.body, d + 2);
@@ -297,13 +299,13 @@ switch (n->type)
 		fprintf (f, "od");
 		break;
 	case ast_read:
-		fprintf (f, "read (%s)", ste_name (n->f.a read.var));
+		fprintf (f, "read (%s)", ste_name (n->f.a_read.var).c_str());
 		break; 
 	case ast_write:
-		fprintf (f, "write (%s)", ste_name (n->f.a read.var));
+		fprintf (f, "write (%s)", ste_name (n->f.a_read.var).c_str());
 		break; 
 	case ast_call:
-		fprintf(f, "%s (", ste_name (n->f.a call.callee));
+		fprintf(f, "%s (", ste_name (n->f.a_call.callee).c_str());
 		print_ast_list (f, n->f.a_call.arg_list, ", ", -1);
 		fprintf (f, ")");
 		break;
@@ -321,13 +323,13 @@ switch (n->type)
 		fprintf (f, ")");
 		break;
 	case ast_var:
-		fprintf (f, "%s", ste_name (n->f.a var.var));
+		fprintf (f, "%s", ste_name (n->f.a_var.var).c_str());
 		break; 
 	case ast_integer:
-		fprintf (f, "%d", n->f.a integer.value);
+		fprintf (f, "%d", n->f.a_integer.value);
 		break; 
 	case ast_float:
-		fprintf (f, "%f", n->f.a float.value);
+		fprintf (f, "%f", n->f.a_float.value);
 		break; 
 	case ast_string:
 		fprintf (f, "\"%s\"", n->f.a_string.string);
@@ -350,7 +352,7 @@ switch (n->type)
 	case ast_cand:
 	case ast_cor:
 	  fprintf (f, "(");
-	  p_a_n (f, n->f.a_binary _op.larg, d);
+	  p_a_n (f, n->f.a_binary_op.larg, d);
 	  switch (n->type) {
 		case ast_times:
 				fprintf (f, " * ");
@@ -431,11 +433,26 @@ static void print_ast_list (FILE *f, ast_list *L, char *sep, int d)
 }
 ////////////////////////////////////////////////////////////////
 /* Print a list of symbol table entries along with their types. */
-
+static j_type ste_var_type(SymbolTableEntry * e){
+    switch (e->entry_type) {
+        case ste_var:
+            return e->f.var.type;
+            break;
+        case ste_const:
+            return e->f.constant.type;
+            break;
+        case ste_routine:
+            return e->f.routine.result_type;
+            break;
+        default:
+            return type_none;
+            break;
+    }
+}
 static void print_ste_list (FILE *f, ste_list *L, char *prefix, char *sep, int d)
         {
 	for ( ; L != NULL; L = L->tail) {
-			fprintf (f, "%s%s : %s", prefix, ste_name(L->head),
+			fprintf (f, "%s%s : %s", prefix, ste_name(L->head).c_str(),
 						type_names [ste_var_type (L->head)]);
 			if (L->tail || d >= 0) fprintf (f, sep); // new page 10
 			if (d >= 0) nl_indent (f, d);
@@ -446,7 +463,10 @@ static void print_ste_list (FILE *f, ste_list *L, char *prefix, char *sep, int d
 static void nl_indent (FILE *f, int d)
 {
 	fprintf (f, "\n");
-	while (d -> 0) fprintf (f, " ");
+    while (d >= 0) {
+     fprintf (f, " ");
+        d--;
+    }
 }
 
 

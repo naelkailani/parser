@@ -1,7 +1,8 @@
 #ifndef __AST__H
 #define __AST__H
 //ast.h
-
+#include"symbol.h"
+#include"fd.h"
 /* Definitions of list datatypes */
 /* List of AST nodes */
 typedef SymbolTableEntry  symbol_table_entry;
@@ -75,7 +76,10 @@ typedef struct ast_node
 	
 	 struct{
 			SymbolTableEntry *name; /* Constant's symbol table entry */
-			int value; /* Evaluated value of constant */
+			union{
+				int int_val; /* Evaluated value of constant */
+				string  string_val; /* Evaluated value of constant */
+			}constVal;
 	 } a_const_decl;
 	
 	 struct{
@@ -167,6 +171,7 @@ typedef struct ast_node
 	} a_itof; 
   
  } f;  // union 
+	struct ast_node * next;
 } AST; // ASt structure
 
  /* Externally-visible functions: */

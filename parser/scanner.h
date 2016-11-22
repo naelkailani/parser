@@ -60,7 +60,8 @@ class SCANNER{
    bool isNextEqualSign(FileDescriptor &f);
    void toKeyWord(TOKEN * t);
    void eatComment(FileDescriptor & f);
-
+   TOKEN * Token();
+   TOKEN * nextToken();
 	SCANNER(string filename);
 	//SCANNER (FileDescriptor *fd);
 	queue<TOKEN*> * Scan(); 

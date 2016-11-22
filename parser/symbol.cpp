@@ -3,7 +3,7 @@
 using namespace std;
 SymbolTableEntry::SymbolTableEntry(){
 }
-SymbolTableEntry::SymbolTableEntry(ste_entry_type type,j_type varType){
+SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type varType){
 	if(type==ste_var){
 		entry_type=type;
 		this->f.var.type=varType;
@@ -12,7 +12,7 @@ SymbolTableEntry::SymbolTableEntry(ste_entry_type type,j_type varType){
 		cout<<("type allowd to create is var");
 	}
 }
-SymbolTableEntry::SymbolTableEntry(ste_entry_type type,j_type structType,int value){
+SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type structType,int value){
 	entry_type=type;
 	if(type==ste_const&&structType==type_integer){
 		f.constant.type=structType;
@@ -27,7 +27,7 @@ SymbolTableEntry::SymbolTableEntry(ste_entry_type type,j_type structType,int val
 		throw new exception();
 	}
 }
-SymbolTableEntry::SymbolTableEntry(ste_entry_type type,j_type constType,string str_value){
+SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type constType,string str_value){
 	if(type==ste_const&&constType==type_string){
 		f.constant.type=constType;
 		f.constant.str_value=str_value.data();

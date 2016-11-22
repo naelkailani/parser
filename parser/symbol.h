@@ -30,11 +30,11 @@ typedef enum {
 class SymbolTableEntry{
 public:
     SymbolTableEntry();
-    SymbolTableEntry(ste_entry_type type,j_type varType);
+    SymbolTableEntry(string name,ste_entry_type type,j_type varType);
     
-    SymbolTableEntry(ste_entry_type type,j_type structType,int value);
+    SymbolTableEntry(string name,ste_entry_type type,j_type structType,int value);
     
-    SymbolTableEntry(ste_entry_type type,j_type constType,string str_value);
+    SymbolTableEntry(string name,ste_entry_type type,j_type constType,string str_value);
     
     
     string name;

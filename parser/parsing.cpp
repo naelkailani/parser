@@ -13,7 +13,6 @@ TOKEN * current;
 
 TOKEN * getCurrentToken()
 {
-
     return new TOKEN();
 }
 
@@ -45,12 +44,17 @@ bool match(TOKEN * token,LEXEME_TYPE lexemeType)
 }
 
 
+AST * parse_id(j_type type) {
+	SymbolTableEntry * entry=new SymbolTableEntry(ste_var,type,)
+	if(!scope.insert(token))
+		perror("already declaerd")
+	return make_ast_node(ast_var, );
+}
 ast_list * parse_decl_list()
 {
     ast_list * decl_list;
     
     AST * decl = parse_decl();
-    
     if( match(getCurrentToken(),lx_semicolon) )
     {
         decl_list = parse_decl_list();
@@ -65,12 +69,11 @@ ast_list * parse_decl_list()
     return decl_list;
     
     
+    
+		return head;
 }
 
-SymbolTableEntry * parseId(){
-	TOKEN * token=getCurrentToken();
-	
-}
+
 
 AST * parse_decl()
 {
@@ -93,4 +96,3 @@ AST * parse_decl()
     return new AST();
 
 }
-

@@ -175,10 +175,10 @@ typedef struct ast_node
 } AST; // ASt structure
 
  /* Externally-visible functions: */
- ast_list *cons_ast (AST *, ast_list *);
+ ast_list *const_ast (AST *, ast_list *);
  ste_list *cons_ste (SymbolTableEntry *, ste_list *);
  int eval_ast_expr (FileDescriptor *, AST *);
- AST *make_ast_node ();
+ AST *make_ast_node (AST_type,...);
  void print_ast_node (FILE *, AST *);
 #endif
 

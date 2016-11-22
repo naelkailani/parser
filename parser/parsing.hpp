@@ -23,7 +23,10 @@ public:
 	
 	TOKEN * getCurrentToken();
 	TOKEN * getNextToken();
-	bool match(TOKEN * token, LEXEME_TYPE lexemeType, string msg);
+	SymbolTableEntry * parse_id_var(j_type type, TOKEN * t);
+	SymbolTableEntry * parse_id_cons(TOKEN * t, int value);
+	AST * parse_decl();
+	bool match(TOKEN * token, LEXEME_TYPE lexemeType);
 
 	AST * parse_program();
 	AST * parse_decl_list();

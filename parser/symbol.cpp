@@ -12,13 +12,13 @@ SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type varTyp
 		cout<<("type allowd to create is var");
 	}
 }
+SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,int value){
+	this->entry_type = type;
+	this->f.constant.value = value;
+}
 SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type structType,int value){
 	entry_type=type;
-	if(type==ste_const&&structType==type_integer){
-		f.constant.type=structType;
-		f.constant.value=value;
-	}
-	else if(type==ste_routine){
+	if(type==ste_routine){
 		f.routine.result_type=structType;
 		f.routine.formalNumber=value;
 	}
@@ -26,14 +26,6 @@ SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type struct
 		//printf("just routine and integer constant type accept");
 		throw new exception();
 	}
-}
-SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type constType,string str_value){
-	if(type==ste_const&&constType==type_string){
-		f.constant.type=constType;
-		f.constant.str_value=str_value.data();
-	}
-	else 
-		throw new exception();
 }
 
 

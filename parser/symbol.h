@@ -30,11 +30,10 @@ typedef enum {
 class SymbolTableEntry{
 public:
     SymbolTableEntry();
-    SymbolTableEntry(string name,ste_entry_type type,j_type varType);
-    
+	SymbolTableEntry::SymbolTableEntry(string name, ste_entry_type type, int value);
+    SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type varType);
     SymbolTableEntry(string name,ste_entry_type type,j_type structType,int value);
     
-    SymbolTableEntry(string name,ste_entry_type type,j_type constType,string str_value);
     
     
     string name;
@@ -47,9 +46,7 @@ public:
         } var;
         // for a constant record its value
         struct{
-            j_type type;
             int value;
-            char const * str_value;
         } constant;
         /* for a routine, record formal parameters and result type */
         struct{

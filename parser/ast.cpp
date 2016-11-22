@@ -93,7 +93,7 @@ AST * make_ast_node (AST_type type,...)
 			break;
 
 		case ast_block:
-			n->f.a_block.vars = va_arg (ap, ste_list *);
+			n->f.a_block.vars = va_arg (ap, ast_list *);
 			n->f.a_block.stmts = va_arg (ap, ast_list *);
 		break;
 

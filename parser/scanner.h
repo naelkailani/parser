@@ -47,6 +47,7 @@ class SCANNER{
    FileDescriptor *file;
 
    public:
+	   char c;
    bool isSpace(char c);
    bool islegalIdStart(char c);
    bool isNumber(char c);

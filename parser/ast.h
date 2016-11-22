@@ -126,7 +126,7 @@ typedef struct ast_node
 	} a_call;
 
 	struct{
-		   ste_list *vars; /* Symbol table entries of local variables */
+		   ast_list *vars; /* Symbol table entries of local variables */
 		  ast_list *stmts; /* Statements in block */
 	} a_block;
 

@@ -26,8 +26,8 @@ TOKEN * getNextToken()
 AST * parse_program()
 {
     
-//    AST* o =  parse_decl_list();
-    return o;
+    //AST* o =  parse_decl_list();
+    return NULL;
     
 }
 
@@ -103,33 +103,9 @@ j_type Parser::parse_type() {
 
 AST * Parser::parse_decl()
 {
-  	if(match(getCurrentToken(),kw_var)){
-		TOKEN * id = getCurrentToken();
-		if (match(id, lx_identifier)) {
-			if (match(getCurrentToken(), lx_colon)) {
-
-				j_type varType=parse_type();
-				SymbolTableEntry * entry=parse_id_var(varType,id);
-				return make_ast_node(ast_var_decl,entry,varType);
-			}
-
-		}
-	}
-	else if(match(getCurrentToken(),kw_constant)){
-		TOKEN * id = getCurrentToken();
-		if (match(id, lx_identifier)) {
-			if (match(getCurrentToken(), lx_eq)) {
-
-
-				AST * exp=parse_exp();
-				int value=eval_ast_expr(fp, exp);
-				SymbolTableEntry * entry=parse_id_cons(id,value);
-				return make_ast_node(ast_const_decl,entry,value);
-			}
-
-		}
-	}
-	else if(match(getCurrentToken(),kw_function)){
+	AST * dec=parse_var_decl();
+	if (dec != = NULL)return dec;
+	 if(match(getCurrentToken(),kw_function)){
 		TOKEN * id = getCurrentToken();
 		if (match(id, lx_identifier)) {
 				int count = 0;
@@ -155,6 +131,7 @@ AST * Parser::parse_decl()
 	}
 	else{
 
+			throw new exception();
 	}
 
     return new AST();
@@ -223,17 +200,25 @@ ast_list * Parser::parse_formals_bar(int &  count) {
 AST * Parser::parse_block(){
 		if (match(getCurrentToken(), kw_begin)) {
 
+			ast_list * var_list = parse_var_decl_list();
+			ast_list * stmt_list = parse_stmt();
+			if (match(getCurrentToken(), kw_end)) {
+				return make_ast_node(ast_block, var_list, stmt_list);
+			}
+			else {
+				throw new exception();
+			}
 		}
 		else {
+			throw new exception();
 		}
-		return NULL;
 }
 
 ast_list * Parser::parse_var_decl_list()
 {
     ast_list * var_decl_list;
-    
     AST * var_decl = parse_var_decl();
+	if (var_decl_list == NULL)return var_decl_list;
     if( match(getCurrentToken(),lx_semicolon) )
     {
         var_decl_list = parse_var_decl_list();
@@ -287,7 +272,5 @@ AST * Parser::parse_var_decl() {
 			throw new exception();
 		}
 	}
-	else {
-		throw new exception();
-	}
+	return  NULL;
 }

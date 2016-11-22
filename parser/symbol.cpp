@@ -16,11 +16,11 @@ SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,int value){
 	this->entry_type = type;
 	this->f.constant.value = value;
 }
-SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type structType,int value){
+SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type returnType,int count){
 	entry_type=type;
 	if(type==ste_routine){
-		f.routine.result_type=structType;
-		f.routine.formalNumber=value;
+		f.routine.result_type=returnType;
+		f.routine.formalNumber=count;
 	}
 	else{
 		//printf("just routine and integer constant type accept");

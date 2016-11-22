@@ -25,12 +25,17 @@ public:
 	TOKEN * getNextToken();
 	SymbolTableEntry * parse_id_var(j_type type, TOKEN * t);
 	SymbolTableEntry * parse_id_cons(TOKEN * t, int value);
+	SymbolTableEntry * parse_id_routine(TOKEN * t, j_type returnType, int count);
+	j_type parse_type();
 	AST * parse_decl();
+	ast_list * parse_formal_list(int &);
+	ast_list * parse_formal_list_bar(int &);
+	ast_list * Parser::parse_formals_bar(int &);
+	ast_list * parse_formals(int &);
 	bool match(TOKEN * token, LEXEME_TYPE lexemeType);
 
 	AST * parse_program();
-	AST * parse_decl_list();
-	AST * parse_decl();
+	ast_list * parse_decl_list();
 };
 
 #endif /* parsing_hpp */

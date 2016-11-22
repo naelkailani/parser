@@ -36,7 +36,6 @@ public:
 	LEXEME_TYPE type;
 	int value;  // can be used instead of the str_ptr for IDs and strings
 	float float_value;
-	
 	string str;
 	//char *str_ptr; // points to strings or Identifiers, can use value
 	              //instead but with type casting
@@ -65,7 +64,7 @@ class SCANNER{
    TOKEN * nextToken();
 	SCANNER(string filename);
 	//SCANNER (FileDescriptor *fd);
-	queue<TOKEN*> * Scan(); 
+	TOKEN*  Scan(); 
     	//TOKEN *Scan(FileDescriptor *fd);
 
 };

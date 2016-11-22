@@ -46,7 +46,7 @@ AST * make_ast_node (AST_type type,...)
 
 		case ast_const_decl:
 			n->f.a_const_decl.name = va_arg (ap,SymbolTableEntry *);
-			n->f.a_const_decl.constVal.int_val = va_arg(ap, int);
+			n->f.a_const_decl.value = va_arg(ap, int);
 			break;
 
 		case ast_routine_decl:
@@ -320,7 +320,7 @@ switch (n->type)
 	case ast_block:
 		fprintf (f, "begin");
 		nl_indent (f, d + 2);
-		print_ste_list (f, n->f.a_block.vars, "var ", "", d + 2);
+		//print_ast_list(f, n->f.a_block.vars, "var ", "", d + 2);
 		print_ast_list (f, n->f.a_block.stmts, ";", d + 2);
 		nl_indent (f, d);
 		fprintf (f, "end");
@@ -447,7 +447,8 @@ static j_type ste_var_type(SymbolTableEntry * e){
             return e->f.var.type;
             break;
         case ste_const:
-            return e->f.constant.type;
+            //return e->f.constant.type;
+			return type_integer;;
             break;
         case ste_routine:
             return e->f.routine.result_type;

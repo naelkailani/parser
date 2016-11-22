@@ -197,7 +197,7 @@ void SCANNER::eatComment(FileDescriptor & f) {
 SCANNER::SCANNER(string fileName){
     file=new FileDescriptor(fileName.data());
 }
-queue<TOKEN *> * SCANNER::Scan() {
+TOKEN * SCANNER::Scan() {
 	string spaces = " \n\r\t";
 	string operators = "()[]:.;,=+-*/!<>";
 	string delimiters=spaces+operators;
@@ -206,7 +206,7 @@ queue<TOKEN *> * SCANNER::Scan() {
 	char c;
 	c = file->GetChar();
 	TOKEN * t=NULL;
-	while (c!=EOF) {
+	if (c!=EOF) {
 		if (islegalIdStart(c)) {
 			file->UngetChar(c);
 			t=getId(*file);
@@ -305,16 +305,23 @@ queue<TOKEN *> * SCANNER::Scan() {
 		else if (isSpace(c)) {
 			//cout << "space " << endl;
 			// d nothing
-
+			while (isSpace(c)) {
+				c = file->GetChar();
+			}
+			file->UngetChar(c);
 		}
 		else {
 			file->ReportError("unvalid character");
 			exit(-1);
 		}
 
-	c = file->GetChar();
+			}
+			else {
+				t = new TOKEN();
+				t->type = lx_eof;
+				return t;
 			}
 	
   
-	return q;
+	return q->front();
 }

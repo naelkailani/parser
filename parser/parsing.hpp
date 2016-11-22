@@ -21,6 +21,7 @@ public:
 	Scope scope;
 	SCANNER scanner;
 	
+	ast_list * parse_formals(int &);
 	TOKEN * getCurrentToken();
 	TOKEN * getNextToken();
 	SymbolTableEntry * parse_id_var(j_type type, TOKEN * t);
@@ -30,8 +31,10 @@ public:
 	AST * parse_decl();
 	ast_list * parse_formal_list(int &);
 	ast_list * parse_formal_list_bar(int &);
-	ast_list * Parser::parse_formals_bar(int &);
-	ast_list * parse_formals(int &);
+	ast_list * parse_formals_bar(int &);
+	AST * parse_block();
+	ast_list * parse_var_decl_list();
+	AST * parse_var_decl();
 	bool match(TOKEN * token, LEXEME_TYPE lexemeType);
 
 	AST * parse_program();

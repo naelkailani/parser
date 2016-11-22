@@ -76,10 +76,7 @@ typedef struct ast_node
 	
 	 struct{
 			SymbolTableEntry *name; /* Constant's symbol table entry */
-			union{
-				int int_val; /* Evaluated value of constant */
-				string  string_val; /* Evaluated value of constant */
-			}constVal;
+				int value; /* Evaluated value of constant */
 	 } a_const_decl;
 	
 	 struct{
@@ -171,12 +168,11 @@ typedef struct ast_node
 	} a_itof; 
   
  } f;  // union 
-	struct ast_node * next;
 } AST; // ASt structure
 
  /* Externally-visible functions: */
  ast_list *const_ast (AST *, ast_list *);
- ste_list *cons_ste (SymbolTableEntry *, ste_list *);
+ //ste_list *cons_ste (SymbolTableEntry *, ste_list *);
  int eval_ast_expr (FileDescriptor *, AST *);
  AST *make_ast_node (AST_type,...);
  void print_ast_node (FILE *, AST *);

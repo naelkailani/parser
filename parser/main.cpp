@@ -20,7 +20,8 @@ using namespace std;
 		//queue<TOKEN *> * q;
 		//q=s.Scan();
         Scope scope;
-	SymbolTableEntry * t;
+		SCANNER s("code2.txt");
+	/*SymbolTableEntry * t;
         SymbolTableEntry * entry=new SymbolTableEntry();
 		entry->f.var.type=type_integer;
 		entry->entry_type=ste_var;
@@ -47,8 +48,13 @@ using namespace std;
         if(t->entry_type!=ste_undefined)
 		cout<<t->f.constant.str_value<<endl;
         
-		cout<<t->f.constant.value<<endl;
-        
+		cout<<t->f.constant.value<<endl;*/
+		
+		TOKEN * t=s.Scan();
+		while (t->type != lx_eof) {
+
+			t=s.Scan();
+		}
 
 		std::cout << "Hello, World!\n";
 		return 0;

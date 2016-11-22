@@ -32,7 +32,7 @@ public:
     SymbolTableEntry();
 	SymbolTableEntry::SymbolTableEntry(string name, ste_entry_type type, int value);
     SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type varType);
-    SymbolTableEntry(string name,ste_entry_type type,j_type returnType,int value);
+    SymbolTableEntry(string name,ste_entry_type type,j_type returnType,int count);
     
     
     

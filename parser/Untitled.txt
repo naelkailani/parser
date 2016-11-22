@@ -1,0 +1,21 @@
+<ifstmt>  ->  if <expr> then <stmt>  <ifstmt_bar>
+<ifstmt_bar-> fi  | else <stmt> fi 
+
+
+<stmt>  -> id<CallAss>
+<callAss> --> := <expr>  | <arg-list> 
+
+<formals>  -> id ':' <type>  <formals_bar>
+<formals_bar> -> ',' id ':' <type>  <formals_bar> | lama
+
+<formal_list> → '(‘<formal_list_bar> 
+<formal_list_bar> →  <formals>’)’|’)’
+
+<arg_list> → '(‘<arg_list_bar> 
+<arg_list_bar> →  <args>’)’|’)’
+
+<args> → <expr><args_bar>
+<args_bar>→lamda| ',' <args>
+
+
+ 

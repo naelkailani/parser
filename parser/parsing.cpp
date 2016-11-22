@@ -27,13 +27,13 @@ TOKEN * getNextToken()
 AST * parse_program()
 {
     
-    AST* o =  parse_decl_list();
+//    AST* o =  parse_decl_list();
     return o;
     
 }
 
 
-bool match(TOKEN * token,LEXEME_TYPE lexemeType,string msg)
+bool match(TOKEN * token,LEXEME_TYPE lexemeType)
 {
     if(token->type == lexemeType)
     {
@@ -41,24 +41,20 @@ bool match(TOKEN * token,LEXEME_TYPE lexemeType,string msg)
         return true;
     }
     
-    
-    
-    
-    cout<<msg;
     return false;
 }
 
 
-AST * parse_decl_list()
+ast_list * parse_decl_list()
 {
-    AST * decl_list_ast;
+    ast_list * decl_list;
     
-    decl_list_ast = parse_decl();
+    AST * decl = parse_decl();
     
-    if( match(getCurrentToken(),lx_semicolon,"expected semicolon") )
+    if( match(getCurrentToken(),lx_semicolon) )
     {
-        decl_list_ast = make_ast_node(?);
-        decl_list_ast = parse_decl_list();
+        decl_list = parse_decl_list();
+        decl_list = const_ast(decl,decl_list);
     }
     else
     {
@@ -66,16 +62,35 @@ AST * parse_decl_list()
         throw new exception();
     }
     
-    return decl_list_ast;
+    return decl_list;
     
     
 }
 
-
+SymbolTableEntry * parseId(){
+	TOKEN * token=getCurrentToken();
+	
+}
 
 AST * parse_decl()
 {
-    
+  	if(match(getCurrentToken(),kw_var)){
+			
+	}
+	else if(match(getCurrentToken(),kw_constant)){
+		
+	}
+	else if(match(getCurrentToken(),kw_function)){
+		
+	}
+	else if(match(getCurrentToken(),kw_procedure)){
+		
+	}
+	else{
+
+	}
+
     return new AST();
+
 }
 

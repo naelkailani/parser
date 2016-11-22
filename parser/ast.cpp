@@ -20,6 +20,14 @@ static string ste_name(SymbolTableEntry * e){
 }
 ///////////////////////////////////////////////////////////////////////
 // page 2
+//
+//
+ast_list *cons_ast (AST * tree_node, ast_list * list){
+	ast_list *n = (ast_list *) malloc (sizeof (ast_list)); 
+	n->head=tree_node;
+	n->tail=list;
+	return n;
+}
 AST * make_ast_node (AST_type type,...)
 {
 	AST *n = (AST *) malloc (sizeof (AST)); // change to new

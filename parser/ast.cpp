@@ -22,7 +22,7 @@ static string ste_name(SymbolTableEntry * e){
 // page 2
 //
 //
-ast_list *cons_ast (AST * tree_node, ast_list * list){
+ast_list *const_ast (AST * tree_node, ast_list * list){
 	ast_list *n = (ast_list *) malloc (sizeof (ast_list)); 
 	n->head=tree_node;
 	n->tail=list;

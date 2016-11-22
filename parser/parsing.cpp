@@ -195,6 +195,7 @@ ast_list * Parser::parse_formals_bar(int &  count) {
 			return NULL;
 		}
 	}
+    return NULL;
 }
 AST * Parser::parse_block(){
 		if (match(getCurrentToken(), kw_begin)) {
@@ -211,6 +212,7 @@ AST * Parser::parse_block(){
 		else {
 			throw new exception();
 		}
+    return NULL;
 }
 
 ast_list * Parser::parse_var_decl_list()

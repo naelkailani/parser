@@ -38,7 +38,12 @@ AST * make_ast_node (AST_type type,...)
 
 		case ast_const_decl:
 			n->f.a_const_decl.name = va_arg (ap,SymbolTableEntry *);
-			n->f.a_const_decl.value = va_arg (ap, int); 
+			if (n->f.a_const_decl.name->f.constant.type == type_integer)
+				n->f.a_const_decl.constVal.int_val = va_arg(ap, int);
+			else if (n->f.a_const_decl.name->f.constant.type == type_string)
+				n->f.a_const_decl.constVal.string_val = va_arg(ap, string);
+			else
+				perror("bad programmer");
 			break;
 
 		case ast_routine_decl:

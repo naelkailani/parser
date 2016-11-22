@@ -12,16 +12,22 @@
 #include <stdio.h>
 #include "ast.h"
 #include "scanner.h"
+#include"symbol.h"
 #include <iostream>
 #include<string>
 
+class Parser {
+public:
+	Scope scope;
+	SCANNER scanner;
+	
+	TOKEN * getCurrentToken();
+	TOKEN * getNextToken();
+	bool match(TOKEN * token, LEXEME_TYPE lexemeType, string msg);
 
-TOKEN * getCurrentToken();
-TOKEN * getNextToken();
-bool match(TOKEN * token,LEXEME_TYPE lexemeType,string msg);
-
-AST * parse_program();
-AST * parse_decl_list();
-AST * parse_decl();
+	AST * parse_program();
+	AST * parse_decl_list();
+	AST * parse_decl();
+};
 
 #endif /* parsing_hpp */

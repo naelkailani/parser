@@ -13,7 +13,6 @@ TOKEN * current;
 
 TOKEN * getCurrentToken()
 {
-
     return new TOKEN();
 }
 
@@ -48,34 +47,66 @@ bool match(TOKEN * token,LEXEME_TYPE lexemeType,string msg)
     return false;
 }
 
-
+AST * parse_id(j_type type) {
+	SymbolTableEntry * entry=new SymbolTableEntry(ste_var,type,)
+	if(!scope.insert(token))
+		perror("already declaerd")
+	return make_ast_node(ast_var, );
+}
 AST * parse_decl_list()
 {
-    AST * decl_list_ast;
+    AST * head=NULL;
     
-    decl_list_ast = parse_decl();
+   head= parse_decl();
     
     if( match(getCurrentToken(),lx_semicolon,"expected semicolon") )
     {
-        decl_list_ast = make_ast_node(?);
-        decl_list_ast = parse_decl_list();
-    }
-    else
-    {
-        
-        throw new exception();
+        AST * decl_list = parse_decl_list();
+		head->next = decl_list;
     }
     
-    return decl_list_ast;
-    
-    
+		return head;
 }
 
 
 
+
 AST * parse_decl()
-{
-    
-    return new AST();
+{	
+    AST * head=NULL;
+    if( match(getCurrentToken(),kw_var) )
+    {
+		if (match(s.token(), lx_colon)) {
+		TOKEN  * t ;
+		t = parse_id();
+			j_type type= parse_type();
+			SymbolTableEntry * entry = new SymbolTableEntry(t->str,ste_var, type);
+			if (!scope.insert(entry)) {
+				perror("already exist");
+			}
+			head = make_ast_node(ast_var_decl, entry, type);
+			return head;
+		}
+		else {
+			perror("expected colon");
+		}
+    }
+    else if( match(getCurrentToken(),kw_constant,"expected constant ") )
+    {
+		make_ast_node(ast_const_decl,)
+        AST * decl_list = parse_decl_list();
+		head->next = decl_list;
+    }
+    else if( match(getCurrentToken(),kw_function,"expected function ") )
+    {
+        AST * decl_list = parse_decl_list();
+		head->next = decl_list;
+    }
+    else if( match(getCurrentToken(),kw_procedure,"expected procedure ") )
+    {
+        AST * decl_list = parse_decl_list();
+		head->next = decl_list;
+    }
+	return parse_decl_list();
 }
 

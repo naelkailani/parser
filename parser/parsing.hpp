@@ -32,12 +32,26 @@ public:
 	j_type parse_type();
 	AST * parse_decl();
 	ast_list * parse_formal_list(int &);
+	ast_list * parse_arg_list(int & count);
+	ast_list * parse_arg_list_bar(int & count);
+	ast_list * parse_args(int & count);
+	ast_list * parse_args_bar(int & count);
+	AST * parse_expr();
+	AST * parse_expr_bar(AST * expr);
+	AST * parse_rel();
+	AST * parse_rel_bar(AST * arith);
+	AST * parse_arith();
+	AST * parse_arith_bar(AST * unary);
+	AST * parse_unary();
+	AST * parse_f();
 	ast_list * parse_formal_list_bar(int &);
 	ast_list * parse_formals_bar(int &);
 	AST * parse_block();
 	ast_list * parse_var_decl_list();
 	AST * parse_var_decl();
 	ast_list * stmt_list();
+	AST * parse_call_assgin(TOKEN * id);
+	AST * parse_ifstmt();
 	AST * parse_stmt();
 	bool match(TOKEN * token, LEXEME_TYPE lexemeType);
 

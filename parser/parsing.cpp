@@ -229,7 +229,7 @@ AST * Parser::parse_block(){
 }
 ast_list * Parser::parse_var_decl_list()
 {
-    ast_list * var_decl_list;
+    ast_list * var_decl_list=NULL;
     AST * var_decl = parse_var_decl();
 	if (var_decl == NULL)return NULL;
     if( match(getCurrentToken(),lx_semicolon) )
@@ -265,10 +265,10 @@ AST * Parser::parse_var_decl() {
 			if (match(getCurrentToken(), lx_eq)) {
 
 
-				//AST * exp=parse_expr();
-				//int value=eval_ast_expr(fp, exp);
-				//SymbolTableEntry * entry=parse_id_cons(id,value);
-				//return make_ast_node(ast_const_decl,entry,value);
+				AST * exp=parse_expr();
+				int value=eval_ast_expr(scanner->file, exp);
+				SymbolTableEntry * entry=parse_id_cons(id,value);
+				return make_ast_node(ast_const_decl,entry,value);
 			}
 			else {
 				throw new exception();
@@ -284,7 +284,7 @@ AST * Parser::parse_var_decl() {
 }
 ast_list * Parser::parse_stmt_list()
 {
-    ast_list * stmt_list;
+    ast_list * stmt_list=NULL;
     
     AST * stmt = parse_stmt();
 
@@ -567,22 +567,22 @@ AST * Parser::parse_arith_bar(AST * arith_l) {
 	AST * arith;
 	if (match(t, lx_plus)) {
 		arith_r = parse_unary();
-		arith=make_ast_node(2, ast_plus, arith_l,arith_r);
+		arith=make_ast_node(3, ast_plus, arith_l,arith_r);
 		return parse_arith_bar(arith);
 	}
 	else if(match(t, lx_minus) ){
 		arith_r = parse_unary();
-		arith=make_ast_node(2, ast_minus, arith_l,arith_r);
+		arith=make_ast_node(3, ast_minus, arith_l,arith_r);
 		return parse_arith_bar(arith);
 	}
 	else if (match(t, lx_star)) {
 		arith_r = parse_unary();
-		arith=make_ast_node(2, ast_times, arith_l,arith_r);
+		arith=make_ast_node(3, ast_times, arith_l,arith_r);
 		return parse_arith_bar(arith);
 	}
 	else if (match(t, lx_slash)) {
 		arith_r = parse_unary();
-		arith=make_ast_node(2, ast_divide, arith_l,arith_r);
+		arith=make_ast_node(3, ast_divide, arith_l,arith_r);
 		return parse_arith_bar(arith);
 	}
 

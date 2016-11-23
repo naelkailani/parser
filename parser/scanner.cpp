@@ -83,6 +83,7 @@ string SCANNER::getInteger(FileDescriptor &f) {
 		exit(-1);
 	}
 	else if (isIdDelimiter(c)) {
+		f.UngetChar(c);
 		return number;
 	}
 	else {
@@ -109,6 +110,7 @@ TOKEN * SCANNER::getNumber(FileDescriptor &f) {
 		return token;
 	}
 	else if (isIdDelimiter(c)) {
+		f.UngetChar(c);
 		token = new TOKEN();
 		token->value = atoi(number.data());
 		token->type = lx_integer;

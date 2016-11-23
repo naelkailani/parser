@@ -7,18 +7,21 @@ SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type varTyp
 	if(type==ste_var){
 		entry_type=type;
 		this->f.var.type=varType;
+		this->name = name;
 	}
 	else {
 		cout<<("type allowd to create is var");
 	}
 }
 SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,int value){
+	this->name = name;
 	this->entry_type = type;
 	this->f.constant.value = value;
 }
 SymbolTableEntry::SymbolTableEntry(string name,ste_entry_type type,j_type returnType,int count){
 	entry_type=type;
 	if(type==ste_routine){
+		this->name = name;
 		f.routine.result_type=returnType;
 		f.routine.formalNumber=count;
 	}

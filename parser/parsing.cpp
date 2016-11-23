@@ -504,17 +504,17 @@ AST * Parser::parse_expr() {
 AST * Parser::parse_expr_bar(AST * expr_l) {
 	AST * expr_r;
 	AST * expr;
-	if (getCurrentToken(), kw_and) {
+	if (match(getCurrentToken(), kw_and)) {
 		expr_r = parse_rel();
 		expr = make_ast_node(3, ast_and, expr_l, expr_r);
 		return parse_expr_bar(expr);
 	}
-	else if (getCurrentToken(), kw_or) {
+	else if (match(getCurrentToken(), kw_or)) {
 		expr_r = parse_rel();
 		expr = make_ast_node(3, ast_or, expr_l, expr_r);
 		return parse_expr_bar(expr);
 	}
-	return parse_expr_bar(expr_l);
+	return expr_l;
 }
 AST * Parser::parse_rel() {
 	AST * arith = parse_arith();
@@ -523,7 +523,7 @@ AST * Parser::parse_rel() {
 AST * Parser::parse_rel_bar(AST * rel_l) {
 	TOKEN * t = getCurrentToken();
 	AST * rel_r;
-	AST * rel;
+	AST * rel=NULL;
 	if (match(t, lx_le)) {
 		rel_r = parse_arith();
 		rel=make_ast_node(3, ast_le, rel_l, rel_r);
@@ -554,8 +554,7 @@ AST * Parser::parse_rel_bar(AST * rel_l) {
 		rel=make_ast_node(3, ast_neq, rel_l, rel_r);
 		return parse_rel_bar(rel);
 	}
-		rel = parse_arith();
-		return parse_rel_bar(rel);
+		return rel_l;
 }
 AST * Parser::parse_arith() {
 	AST * unary = parse_unary();
@@ -586,7 +585,7 @@ AST * Parser::parse_arith_bar(AST * arith_l) {
 		return parse_arith_bar(arith);
 	}
 
-		return parse_arith_bar(arith_l);
+		return arith_l;
 }
 AST * Parser::parse_unary(){
 	AST_type type;

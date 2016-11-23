@@ -207,10 +207,10 @@ int eval_ast_expr (FileDescriptor *fd, AST *n)
 			>= eval_ast_expr (fd, n->f.a_binary_op.rarg));
 		case ast_and:
 			return (eval_ast_expr (fd, n->f.a_binary_op.larg)
-				& eval_ast_expr (fd, n->f.a_binary_op.rarg));
+				&& eval_ast_expr (fd, n->f.a_binary_op.rarg));
 		case ast_or:
 			return (eval_ast_expr (fd, n->f.a_binary_op.larg)
-				| eval_ast_expr (fd, n->f.a_binary_op.rarg));
+				|| eval_ast_expr (fd, n->f.a_binary_op.rarg));
 		case ast_cand:
 			return (eval_ast_expr (fd, n->f.a_binary_op.larg)
 				& eval_ast_expr (fd,n->f.a_binary_op.rarg));

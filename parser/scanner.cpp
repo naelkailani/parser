@@ -196,6 +196,7 @@ void SCANNER::eatComment(FileDescriptor & f) {
 }
 SCANNER::SCANNER(string fileName){
     file=new FileDescriptor(fileName.data());
+	nextToken();
 }
 TOKEN * SCANNER::Scan() {
 	string spaces = " \n\r\t";
@@ -203,125 +204,131 @@ TOKEN * SCANNER::Scan() {
 	string delimiters=spaces+operators;
 	queue<TOKEN *> * q=new queue<TOKEN *>();
 		
-	char c;
 	c = file->GetChar();
 	TOKEN * t=NULL;
-	if (c!=EOF) {
-		if (islegalIdStart(c)) {
-			file->UngetChar(c);
-			t=getId(*file);
-			toKeyWord(t);
-			q->push(t);
-			if (t->type == lx_identifier) {
-				cout << "identifier : " << t->str.data() << endl;
-			}
-			else{
-				cout << "key word : " << t->str.data() << endl;
-			}
-
-		}
-		else if (isNumber(c)) {
-			file->UngetChar(c);
-			t = getNumber(*file);
-					q->push(t);
-			if (t->type == lx_integer)
-				cout << "integer :" << t->value << endl;
-			else
-				cout << "float :" << t->float_value << endl;
-		}
-		else if (c == '\"') {
-			t = getString(*file);
-					q->push(t);
-			cout << "string :" << t->str.data() << endl;
-
-		}
-		else if (isOperator(c)) {
-			t = new TOKEN();
-			bool nextEqual = isNextEqualSign(*file);
-			if (c == ':') {
-				if (nextEqual) {
-					t->type = lx_colon_eq;
-					q->push(t);
+	if (c == EOF) {
+		t = new TOKEN();
+		t->type = lx_eof;
+		return t;
+	}
+	else {
+		while (q->empty()) {
+			if (islegalIdStart(c)) {
+				file->UngetChar(c);
+				t = getId(*file);
+				toKeyWord(t);
+				q->push(t);
+				if (t->type == lx_identifier) {
+					cout << "identifier : " << t->str.data() << endl;
 				}
 				else {
-					t->type = lx_colon;
-					q->push(t);
+					cout << "key word : " << t->str.data() << endl;
 				}
 
 			}
-			else if (c == '!') {
-				if (nextEqual) {
-					t->type = lx_neq;
-					q->push(t);
-				}
+			else if (isNumber(c)) {
+				file->UngetChar(c);
+				t = getNumber(*file);
+				q->push(t);
+				if (t->type == lx_integer)
+					cout << "integer :" << t->value << endl;
 				else
-					file->ReportError("unvalid operator");
+					cout << "float :" << t->float_value << endl;
+			}
+			else if (c == '\"') {
+				t = getString(*file);
+				q->push(t);
+				cout << "string :" << t->str.data() << endl;
 
 			}
-			else if (c == '<') {
-				if (nextEqual) {
-					t->type = lx_le;
+			else if (isOperator(c)) {
+				t = new TOKEN();
+				bool nextEqual = isNextEqualSign(*file);
+				if (c == ':') {
+					if (nextEqual) {
+						t->type = lx_colon_eq;
+						q->push(t);
+					}
+					else {
+						t->type = lx_colon;
+						q->push(t);
+					}
+
+				}
+				else if (c == '!') {
+					if (nextEqual) {
+						t->type = lx_neq;
+						q->push(t);
+					}
+					else
+						file->ReportError("unvalid operator");
+
+				}
+				else if (c == '<') {
+					if (nextEqual) {
+						t->type = lx_le;
+						q->push(t);
+					}
+					else {
+						t->type = lx_lt;
+						q->push(t);
+					}
+
+				}
+				else if (c == '>') {
+					if (nextEqual) {
+						t->type = lx_ge;
+						q->push(t);
+					}
+					else {
+						t->type = lx_gt;
+						q->push(t);
+					}
+
+				}
+				else if (c == '-') {
+					t->type = lx_minus;
 					q->push(t);
+
 				}
 				else {
-					t->type = lx_lt;
-					q->push(t);
-				}
-
-			}
-			else if (c == '>') {
-				if (nextEqual) {
-					t->type = lx_ge;
-					q->push(t);
-				}
-				else {
-					t->type = lx_gt;
-					q->push(t);
-				}
-
-			}
-			else if (c == '-') {
-				t->type = lx_minus;
-					q->push(t);
-
-			}
-			else {
-				int pos = operators.find(c);
+					int pos = operators.find(c);
 					t->type = (LEXEME_TYPE)(34 + pos);
 					q->push(t);
+				}
+				cout << "operator: " << c << endl;
 			}
-			cout << "operator: " << c << endl;
-		}
-		else if (c == '#') {
-			c=file->GetChar();
-			if (c == '#') {
-				eatComment(*file);
+			else if (c == '#') {
+				c = file->GetChar();
+				if (c == '#') {
+					eatComment(*file);
+				}
+				else {
+					file->ReportError("unvalid comment");
+					exit(-1);
+				}
+			}
+			else if (isSpace(c)) {
+				//cout << "space " << endl;
+				// d nothing
 			}
 			else {
-				file->ReportError("unvalid comment");
+				file->ReportError("unvalid character");
 				exit(-1);
 			}
-		}
-		else if (isSpace(c)) {
-			//cout << "space " << endl;
-			// d nothing
-			while (isSpace(c)) {
-				c = file->GetChar();
-			}
-			file->UngetChar(c);
-		}
-		else {
-			file->ReportError("unvalid character");
-			exit(-1);
+	c = file->GetChar();
 		}
 
-			}
-			else {
-				t = new TOKEN();
-				t->type = lx_eof;
-				return t;
-			}
+		
+	}
 	
-  
+	file->UngetChar(c);
 	return q->front();
 }
+TOKEN * SCANNER::Token() {
+	return currt;
+   }
+TOKEN * SCANNER::nextToken() {
+	currt = this->Scan();
+	return currt;
+   }

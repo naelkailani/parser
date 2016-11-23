@@ -12,7 +12,7 @@ using namespace std;
 
 TOKEN * Parser::getCurrentToken()
 {
-    return new TOKEN();
+	return scanner->Token();
 }
 
 TOKEN * Parser::getNextToken()
@@ -30,19 +30,16 @@ AST * Parser::parse_program()
     
 }
 
-
 bool Parser::match(TOKEN * token, LEXEME_TYPE lexemeType){
 	TOKEN * current = NULL;
     if(token->type == lexemeType)
     {
-//        current = getNextToken();
+		scanner->nextToken();
         return true;
     }
     
     return false;
 }
-
-
 SymbolTableEntry * Parser::parse_id_var(j_type type,TOKEN * t) {
 	SymbolTableEntry * entry;
 		entry = new SymbolTableEntry(t->str, ste_var, type);
@@ -64,48 +61,6 @@ SymbolTableEntry * Parser::parse_id_routine(TOKEN * t,j_type returnType,int coun
 		perror("already declaerd");
 	return entry;
 }
-ast_list * Parser::parse_decl_list()
-{
-	/*
-    ast_list * decl_list;
-    
-    AST * decl = parse_decl();
-    if( match(getCurrentToken(),lx_semicolon) )
-    {
-
-        decl_list = parse_decl_list();
-        decl_list = const_ast(decl,decl_list);
-    }
-    else
-    {
-        
-        throw new exception();
-    }
-    
-    return decl_list;*/
-	return NULL;
-}
-ast_list * Parser::parse_formals(int & count) {
-		TOKEN * id = getCurrentToken();
-		if (match(id, lx_identifier)) {
-			if (match(getCurrentToken(), lx_colon)) {
-
-				j_type varType = parse_type();
-				SymbolTableEntry * entry = parse_id_var(varType, id);
-				AST * node = make_ast_node(ast_var_decl, entry, varType);
-				ast_list * list = parse_formals_bar(count);
-				count = 1 + count;
-				return const_ast(node, list);
-			}
-			else {
-				throw new exception();
-			}
-		}
-		else {
-			throw new exception();
-		}
-
-}
 j_type Parser::parse_type() {
 	TOKEN * t = getCurrentToken();
 	if (match(t, kw_integer)) {
@@ -121,7 +76,25 @@ j_type Parser::parse_type() {
 		throw new exception();
 	}
 }
+ast_list * Parser::parse_decl_list()
+{
+    ast_list * decl_list;
+    
+    AST * decl = parse_decl();
+    if( match(getCurrentToken(),lx_semicolon) )
+    {
 
+        decl_list = parse_decl_list();
+        decl_list = const_ast(decl,decl_list);
+    }
+    else
+    {
+        
+        throw new exception();
+    }
+    
+    return decl_list;
+}
 AST * Parser::parse_decl()
 {
 	AST * dec=parse_var_decl();
@@ -137,7 +110,7 @@ AST * Parser::parse_decl()
 					SymbolTableEntry * entry = parse_id_routine(id, returnType, count);
 					AST * body = parse_block();
 					scope.exitScope();
-					return make_ast_node(ast_routine_decl, entry, list_formal, returnType, body);
+					return make_ast_node(5, ast_routine_decl, entry, list_formal, returnType, body);
 				}
 				else {
 					throw new exception();
@@ -148,7 +121,21 @@ AST * Parser::parse_decl()
 		}
 	}
 	else if(match(getCurrentToken(),kw_procedure)){
-			
+		TOKEN * id = getCurrentToken();
+		if (match(id, lx_identifier)) {
+				int count = 0;
+				scope.enterScope();
+				ast_list * list_formal = parse_formal_list(count);
+					j_type returnType =type_none;
+					SymbolTableEntry * entry = parse_id_routine(id, returnType, count);
+					AST * body = parse_block();
+					scope.exitScope();
+					return make_ast_node(5, ast_routine_decl, entry, list_formal, returnType, body);
+		}
+		else {
+			throw new exception();
+		}
+		
 	}
 	else{
 
@@ -169,9 +156,36 @@ ast_list * Parser::parse_formal_list_bar(int & count) {
 	if(match(getCurrentToken(),lx_rparen)){
 		return NULL;
 	}
-	return  parse_formals(count);
+	ast_list * list=parse_formals(count);
 	
+	if(match(getCurrentToken(),lx_rparen)){
+		return list;
+	}
+	else {
+		throw new exception();
+	}
 	
+}
+ast_list * Parser::parse_formals(int & count) {
+		TOKEN * id = getCurrentToken();
+		if (match(id, lx_identifier)) {
+			if (match(getCurrentToken(), lx_colon)) {
+
+				j_type varType = parse_type();
+				SymbolTableEntry * entry = parse_id_var(varType, id);
+				AST * node = make_ast_node(3,ast_var_decl, entry, varType);
+				ast_list * list = parse_formals_bar(count);
+				count = 1 + count;
+				return const_ast(node, list);
+			}
+			else {
+				throw new exception();
+			}
+		}
+		else {
+			throw new exception();
+		}
+
 }
 ast_list * Parser::parse_formals_bar(int &  count) {
 	if (match(getCurrentToken(), lx_comma)) {
@@ -182,7 +196,7 @@ ast_list * Parser::parse_formals_bar(int &  count) {
 
 				j_type varType = parse_type();
 				SymbolTableEntry * entry = parse_id_var(varType, id);
-				AST * node = make_ast_node(ast_var_decl, entry, varType);
+				AST * node = make_ast_node(3,ast_var_decl, entry, varType);
 				ast_list * list = parse_formals_bar(count);
 				count = 1 + count;
 				return const_ast(node, list);
@@ -201,9 +215,9 @@ AST * Parser::parse_block(){
 		if (match(getCurrentToken(), kw_begin)) {
 
 			ast_list * var_list = parse_var_decl_list();
-			//ast_list * stmt_list = parse_stmt();
+			ast_list * stmt_list = parse_stmt_list();
 			if (match(getCurrentToken(), kw_end)) {
-				//return make_ast_node(ast_block, var_list, stmt_list);
+				return make_ast_node(3,ast_block, var_list, stmt_list);
 			}
 			else {
 				throw new exception();
@@ -214,7 +228,6 @@ AST * Parser::parse_block(){
 		}
     return NULL;
 }
-
 ast_list * Parser::parse_var_decl_list()
 {
     ast_list * var_decl_list;
@@ -225,12 +238,7 @@ ast_list * Parser::parse_var_decl_list()
         var_decl_list = parse_var_decl_list();
         var_decl_list = const_ast(var_decl,var_decl_list);
     }
-    else
-    {
-        
-        throw new exception();
-    }
-    
+	// lamda    
     return var_decl_list;
 }
 AST * Parser::parse_var_decl() {
@@ -241,7 +249,7 @@ AST * Parser::parse_var_decl() {
 
 				j_type varType=parse_type();
 				SymbolTableEntry * entry=parse_id_var(varType,id);
-				return make_ast_node(ast_var_decl,entry,varType);
+				return make_ast_node(3,ast_var_decl,entry,varType);
 			}
 			else {
 				throw new exception();
@@ -258,7 +266,7 @@ AST * Parser::parse_var_decl() {
 			if (match(getCurrentToken(), lx_eq)) {
 
 
-				//AST * exp=parse_exp();
+				//AST * exp=parse_expr();
 				//int value=eval_ast_expr(fp, exp);
 				//SymbolTableEntry * entry=parse_id_cons(id,value);
 				//return make_ast_node(ast_const_decl,entry,value);
@@ -274,4 +282,49 @@ AST * Parser::parse_var_decl() {
 		}
 	}
 	return  NULL;
+}
+ast_list * Parser::stmt_list()
+{
+    ast_list * stmt_list;
+    
+    AST * stmt = parse_stmt();
+
+    if(match(getCurrentToken(),lx_semicolon) )
+    {
+        stmt_list = parse_stmt_list();
+        stmt_list = const_ast(stmt,stmt_list);
+    }
+	//lamda
+    return stmt_list;
+}
+AST * Parser::parse_stmt() {
+	AST * stmt = NULL;
+	stmt = parse_call_assign();
+	if (stmt != NULL)return;
+	stmt = parse_ifstmt();
+	if (stmt != NULL)return;
+	if (match(getCurrentToken(), kw_while)) {
+		AST * predeict = parse_expr();
+		if (match(getCurrentToken(), kw_do)) {
+			AST * body= parse_stmt();
+			if (match(getCurrentToken(), kw_od))
+				return make_ast_node(4, ast_while, predeict, body);
+			throw new exception();
+		}
+		else {
+			throw new exception();
+		}
+	}
+	else if (match(getCurrentToken(), kw_for)) {
+		AST * assign = parse_assign();
+		SymbolTableEntry var = assign->f.a_for.var;
+		if (match(getCurrentToken(), kw_to)) {
+			AST * upper = parse_expr();
+			if (match(getCurrentToken(), kw_do)) {
+				AST * body = parse_stmt();
+				if (match(getCurrentToken(), kw_od))
+					return make_ast_node(ast_for,);
+			}
+		}
+	}
 }

@@ -47,6 +47,7 @@ class SCANNER{
 
    public:
 	   char c;
+	   TOKEN * currt;
    bool isSpace(char c);
    bool islegalIdStart(char c);
    bool isNumber(char c);

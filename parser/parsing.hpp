@@ -19,8 +19,10 @@
 class Parser {
 public:
 	Scope scope;
-	SCANNER scanner;
-	
+	SCANNER * scanner;
+	Parser::Parser(string fileName) {
+		scanner = new SCANNER(fileName);
+	}
 	ast_list * parse_formals(int &);
 	TOKEN * getCurrentToken();
 	TOKEN * getNextToken();
@@ -35,6 +37,8 @@ public:
 	AST * parse_block();
 	ast_list * parse_var_decl_list();
 	AST * parse_var_decl();
+	ast_list * stmt_list();
+	AST * parse_stmt();
 	bool match(TOKEN * token, LEXEME_TYPE lexemeType);
 
 	AST * parse_program();

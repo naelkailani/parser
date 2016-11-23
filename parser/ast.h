@@ -174,7 +174,7 @@ typedef struct ast_node
  ast_list *const_ast (AST *, ast_list *);
  //ste_list *cons_ste (SymbolTableEntry *, ste_list *);
  int eval_ast_expr (FileDescriptor *, AST *);
- AST *make_ast_node (AST_type,...);
+ AST *make_ast_node (int,...);
  void print_ast_node (FILE *, AST *);
 #endif
 

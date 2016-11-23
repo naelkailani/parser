@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include"scanner.h"
 #include<queue>
+#include"parsing.hpp"
 using namespace std;
 
 	int main(int argc, const char * argv[]) {
@@ -20,7 +21,7 @@ using namespace std;
 		//queue<TOKEN *> * q;
 		//q=s.Scan();
         Scope scope;
-		SCANNER s("code2.txt");
+		SCANNER s("code.txt");
 	/*SymbolTableEntry * t;
         SymbolTableEntry * entry=new SymbolTableEntry();
 		entry->f.var.type=type_integer;
@@ -49,7 +50,8 @@ using namespace std;
 		cout<<t->f.constant.str_value<<endl;
         
 		cout<<t->f.constant.value<<endl;*/
-		
+		Parser parser("test1.txt");
+		ast_list * a = parser.parse_decl_list();
 		TOKEN * t=s.Scan();
 		while (t->type != lx_eof) {
 

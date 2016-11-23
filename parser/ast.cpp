@@ -28,15 +28,16 @@ ast_list *const_ast (AST * tree_node, ast_list * list){
 	n->tail=list;
 	return n;
 }
-AST * make_ast_node (AST_type type,...)
+AST * make_ast_node (int num,...)
 {
+	
 	AST *n = (AST *) malloc (sizeof (AST)); // change to new
 	va_list ap;
 
 	if (n == NULL) perror("malloc failed in make_ast_node\n");
 	
-	va_start (ap,type);
-	type = va_arg (ap, AST_type);
+	va_start (ap,num);
+	AST_type type = va_arg (ap, AST_type);
 	n->type = type;
 	switch (type) {
 		case ast_var_decl:

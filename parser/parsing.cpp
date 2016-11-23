@@ -72,7 +72,7 @@ j_type Parser::parse_type() {
 		return type_boolean;
 	}
 	else {
-		throw new exception();
+		throw new exception("expected type");
 	}
 }
 ast_list * Parser::parse_decl_list()
@@ -166,47 +166,57 @@ ast_list * Parser::parse_formal_list_bar(int & count) {
 	
 }
 ast_list * Parser::parse_formals(int & count) {
+		if (match(getCurrentToken(), kw_var)) {
 		TOKEN * id = getCurrentToken();
-		if (match(id, lx_identifier)) {
-			if (match(getCurrentToken(), lx_colon)) {
+			if (match(id, lx_identifier)) {
+				if (match(getCurrentToken(), lx_colon)) {
 
-				j_type varType = parse_type();
-				SymbolTableEntry * entry = parse_id_var(varType, id);
-				AST * node = make_ast_node(3,ast_var_decl, entry, varType);
-				ast_list * list = parse_formals_bar(count);
-				count = 1 + count;
-				return const_ast(node, list);
+					j_type varType = parse_type();
+					SymbolTableEntry * entry = parse_id_var(varType, id);
+					AST * node = make_ast_node(3, ast_var_decl, entry, varType);
+					ast_list * list = parse_formals_bar(count);
+					count = 1 + count;
+					return const_ast(node, list);
+				}
+				else {
+					throw new exception("expected colon");
+				}
 			}
 			else {
-				throw new exception();
+				throw new exception("expected identifier");
 			}
 		}
 		else {
-			throw new exception();
+			throw new exception("expected var");
 		}
 
 }
 ast_list * Parser::parse_formals_bar(int &  count) {
 	if (match(getCurrentToken(), lx_comma)) {
 
-		TOKEN * id = getCurrentToken();
-		if (match(id, lx_identifier)) {
-			if (match(getCurrentToken(), lx_colon)) {
+		if (match(getCurrentToken(), kw_var)) {
+			TOKEN * id = getCurrentToken();
+			if (match(id, lx_identifier)) {
+				if (match(getCurrentToken(), lx_colon)) {
 
-				j_type varType = parse_type();
-				SymbolTableEntry * entry = parse_id_var(varType, id);
-				AST * node = make_ast_node(3,ast_var_decl, entry, varType);
-				ast_list * list = parse_formals_bar(count);
-				count = 1 + count;
-				return const_ast(node, list);
+					j_type varType = parse_type();
+					SymbolTableEntry * entry = parse_id_var(varType, id);
+					AST * node = make_ast_node(3, ast_var_decl, entry, varType);
+					ast_list * list = parse_formals_bar(count);
+					count = 1 + count;
+					return const_ast(node, list);
+				}
+				else {
+					throw new exception("expected colon");
+				}
 			}
 			else {
-				throw new exception();
+				throw new exception("expected identifer");
 			}
 		}
-		else {
-			return NULL;
 		}
+	else {
+		throw new exception("expected comma");
 	}
     return NULL;
 }
@@ -268,7 +278,7 @@ AST * Parser::parse_var_decl() {
 				AST * exp=parse_expr();
 				int value=eval_ast_expr(scanner->file, exp);
 				SymbolTableEntry * entry=parse_id_cons(id,value);
-				return make_ast_node(ast_const_decl,entry,value);
+				return make_ast_node(3,ast_const_decl,entry,value);
 			}
 			else {
 				throw new exception();

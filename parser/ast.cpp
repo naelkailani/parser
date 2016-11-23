@@ -11,10 +11,6 @@ arguments are the fields of that type of node, in order. */
 #include "symbol.h"
 #include "ast.h"
 /* Internal routines: */
-static void nl_indent (FILE *, int);
-static void p_a_n (FILE *, AST *, int);
-static void print_ast_list (FILE *, ast_list *, char *, int);
-static void print_ste_list (FILE *, ste_list *, char *, char *, int);
 static string ste_name(SymbolTableEntry * e){
     return e->name;
 }
@@ -52,7 +48,7 @@ AST * make_ast_node (int num,...)
 
 		case ast_routine_decl:
 			n->f.a_routine_decl.name = va_arg (ap, SymbolTableEntry *);
-			n->f.a_routine_decl.formals = va_arg (ap, ste_list *);
+			n->f.a_routine_decl.formals = va_arg (ap, ast_list *);
 			n->f.a_routine_decl.result_type = va_arg (ap, j_type );
 			n->f.a_routine_decl.body = va_arg (ap, AST *);
 			break;
@@ -297,7 +293,8 @@ switch (n->type)
 		fprintf (f, "od");// new page
 		break;
 	case ast_for:
-		fprintf (f, "for %s = ", ste_name (n->f.a_for.var).c_str());
+		//fprintf (f, "for %s = ", ste_name (n->f.a_for.var).c_str());
+		fprintf (f, "for  ");
 		p_a_n (f, n->f.a_for.lower_bound, d);
 		fprintf (f, " to ");
         p_a_n (f, n->f.a_for.upper_bound, d);
@@ -321,7 +318,7 @@ switch (n->type)
 	case ast_block:
 		fprintf (f, "begin");
 		nl_indent (f, d + 2);
-		//print_ast_list(f, n->f.a_block.vars, "var ", "", d + 2);
+		print_ast_list(f, n->f.a_block.vars, "", d + 2);
 		print_ast_list (f, n->f.a_block.stmts, ";", d + 2);
 		nl_indent (f, d);
 		fprintf (f, "end");
@@ -430,7 +427,7 @@ switch (n->type)
 }
 ///////////////////////////////////////////////////
 /* Print a list of AST nodes. */
-static void print_ast_list (FILE *f, ast_list *L, char *sep, int d)
+void print_ast_list (FILE *f, ast_list *L, char *sep, int d)
 {
 	for ( ; L != NULL; L = L->tail){
 		p_a_n (f, L->head, d);
@@ -459,11 +456,11 @@ static j_type ste_var_type(SymbolTableEntry * e){
             break;
     }
 }
-static void print_ste_list (FILE *f, ste_list *L, char *prefix, char *sep, int d)
+static void print_ste_list (FILE *f, ast_list *L, char *prefix, char *sep, int d)
         {
 	for ( ; L != NULL; L = L->tail) {
-			fprintf (f, "%s%s : %s", prefix, ste_name(L->head).c_str(),
-						type_names [ste_var_type (L->head)]);
+			fprintf (f, "%s%s : %s", prefix, ste_name(L->head->f.a_var_decl.name).c_str(),
+						type_names [ste_var_type (L->head->f.a_var_decl.name)]);
 			if (L->tail || d >= 0) fprintf (f, sep); // new page 10
 			if (d >= 0) nl_indent (f, d);
    }

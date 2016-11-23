@@ -81,7 +81,7 @@ typedef struct ast_node
 	
 	 struct{
 			symbol_table_entry *name; /* Routine's symbol table entry */
-			ste_list *formals; /* List of formal parameters */
+			ast_list *formals; /* List of formal parameters */
 			j_type result_type; /* Type of result (none_type for procedures) */
 			struct ast_node *body; /* Body of routine */
 	} a_routine_decl;
@@ -176,6 +176,10 @@ typedef struct ast_node
  int eval_ast_expr (FileDescriptor *, AST *);
  AST *make_ast_node (int,...);
  void print_ast_node (FILE *, AST *);
+void nl_indent (FILE *, int);
+void p_a_n (FILE *, AST *, int);
+void print_ast_list (FILE *, ast_list *, char *, int);
+void print_ste_list (FILE *, ast_list *, char *, char *, int);
 #endif
 
 

@@ -77,7 +77,7 @@ j_type Parser::parse_type() {
 }
 ast_list * Parser::parse_decl_list()
 {
-    ast_list * decl_list;
+    ast_list * decl_list=NULL;
     
     AST * decl = parse_decl();
     if( match(getCurrentToken(),lx_semicolon) )
@@ -85,11 +85,6 @@ ast_list * Parser::parse_decl_list()
 
         decl_list = parse_decl_list();
         decl_list = const_ast(decl,decl_list);
-    }
-    else
-    {
-        
-        throw new exception();
     }
     
     return decl_list;
@@ -106,9 +101,9 @@ AST * Parser::parse_decl()
 				ast_list * list_formal = parse_formal_list(count);
 				if (match(getCurrentToken(), lx_colon)) {
 					j_type returnType = parse_type();
-					SymbolTableEntry * entry = parse_id_routine(id, returnType, count);
 					AST * body = parse_block();
 					scope.exitScope();
+					SymbolTableEntry * entry = parse_id_routine(id, returnType, count);
 					return make_ast_node(5, ast_routine_decl, entry, list_formal, returnType, body);
 				}
 				else {
@@ -126,19 +121,15 @@ AST * Parser::parse_decl()
 				scope.enterScope();
 				ast_list * list_formal = parse_formal_list(count);
 					j_type returnType =type_none;
-					SymbolTableEntry * entry = parse_id_routine(id, returnType, count);
 					AST * body = parse_block();
 					scope.exitScope();
+					SymbolTableEntry * entry = parse_id_routine(id, returnType, count);
 					return make_ast_node(5, ast_routine_decl, entry, list_formal, returnType, body);
 		}
 		else {
 			throw new exception();
 		}
 		
-	}
-	else{
-
-			throw new exception();
 	}
 
 	return NULL;
@@ -215,9 +206,6 @@ ast_list * Parser::parse_formals_bar(int &  count) {
 			}
 		}
 		}
-	else {
-		throw new exception("expected comma");
-	}
     return NULL;
 }
 AST * Parser::parse_block(){
@@ -231,9 +219,6 @@ AST * Parser::parse_block(){
 			else {
 				throw new exception();
 			}
-		}
-		else {
-			throw new exception();
 		}
     return NULL;
 }
@@ -310,7 +295,7 @@ AST * Parser::parse_call_assgin(TOKEN * id) {
 		// assign
 		if (match(getCurrentToken(), lx_colon_eq)) {
 			AST * exp = parse_expr();
-			SymbolTableEntry * e = scope.find(id->str);
+			SymbolTableEntry * e = scope.getFirstOcc(id->str);
 			if (e->entry_type == ste_undefined) {
 				throw new exception("undefined variable ");
 			}
@@ -322,7 +307,7 @@ AST * Parser::parse_call_assgin(TOKEN * id) {
 		else {
 			int count = 0;
 			ast_list * args = parse_arg_list(count);
-			SymbolTableEntry * e = scope.find(id->str);
+			SymbolTableEntry * e = scope.getFirstOcc(id->str);
 			if (e->entry_type == ste_undefined) {
 				throw new exception("undefined function ");
 			}
@@ -385,13 +370,13 @@ AST * Parser::parse_stmt() {
 			else {
 
 			}
-			AST * lower = assign->f.a_for.lower_bound;
+			AST * lower = assign;
 			if (match(getCurrentToken(), kw_to)) {
 				AST * upper = parse_expr();
 				if (match(getCurrentToken(), kw_do)) {
-					AST * body = parse_stmt();
+					ast_list * body = parse_stmt_list();
 					if (match(getCurrentToken(), kw_od))
-						return make_ast_node(4, ast_for, lower, upper, body);
+						return make_ast_node(5, ast_for,lower->f.a_assign.lhs, lower, upper, body);
 					else {
 						throw new exception("expected od");
 					}
@@ -470,7 +455,7 @@ AST * Parser::parse_stmt() {
 
 ast_list * Parser::parse_arg_list(int &count) {
 	if (match(getCurrentToken(), lx_lparen)) {
-		return parse_arg_list(count);
+		return parse_arg_list_bar(count);
 	}
 	else
 		throw new exception();

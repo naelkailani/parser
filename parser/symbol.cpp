@@ -81,6 +81,7 @@ SymbolTableEntry * Scope::getFirstOcc(string name){
 	SymbolTableEntry * entry=NULL;
 	SymbolTableEntry * tempEntry=NULL;
 	SymbolTable * currentOld=current;
+	
 	while(current!=NULL){
 		tempEntry=find(name);
 		if(tempEntry->entry_type!=ste_undefined){
@@ -91,7 +92,8 @@ SymbolTableEntry * Scope::getFirstOcc(string name){
 		exitScope();
 	}
 	current=currentOld;
-	throw new exception;
-	// return tempEntry;
+	entry= new SymbolTableEntry();
+	entry->entry_type = ste_undefined;
+	return entry;
 }
 

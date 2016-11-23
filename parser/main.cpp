@@ -5,13 +5,14 @@
 //  Created by Nael Kilani on 11/18/16.
 //  Copyright © 2016 Nael Kilani. All rights reserved.
 //
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include"symbol.h"
 #include <unordered_map>
 #include"scanner.h"
 #include<queue>
 #include"parsing.hpp"
+#include"ast.h"
 using namespace std;
 
 	int main(int argc, const char * argv[]) {
@@ -52,11 +53,8 @@ using namespace std;
 		cout<<t->f.constant.value<<endl;*/
 		Parser parser("test1.txt");
 		ast_list * a = parser.parse_decl_list();
-		TOKEN * t=s.Scan();
-		while (t->type != lx_eof) {
-
-			t=s.Scan();
-		}
+		FILE * fp = fopen("new.txt", "w");
+		print_ast_list(fp, a, "", 0);
 
 		std::cout << "Hello, World!\n";
 		return 0;

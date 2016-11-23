@@ -49,6 +49,7 @@ public:
 	AST * parse_block();
 	ast_list * parse_var_decl_list();
 	AST * parse_var_decl();
+	ast_list * parse_stmt_list();
 	ast_list * stmt_list();
 	AST * parse_call_assgin(TOKEN * id);
 	AST * parse_ifstmt();

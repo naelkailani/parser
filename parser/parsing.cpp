@@ -382,13 +382,22 @@ AST * Parser::parse_stmt() {
 					AST * body = parse_stmt();
 					if (match(getCurrentToken(), kw_od))
 						return make_ast_node(4, ast_for, lower, upper, body);
+					else {
+						throw new exception("expected od");
+					}
 				}
+				else {
+					throw new exception("expected do");
+				}
+			}
+			else {
+				throw new exception("expected to");
 			}
 		}
 		else {
 			throw new exception("expected an identifier");
 		}
-}
+	}
 	else if (match(getCurrentToken(), kw_read)) {
 		if (match(getCurrentToken(), lx_lparen)) {
 			TOKEN * id = getCurrentToken();

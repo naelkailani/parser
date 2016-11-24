@@ -50,14 +50,14 @@ SymbolTableEntry * Parser::parse_id_cons(TOKEN * t,int value) {
 	SymbolTableEntry * entry;
 	entry = new SymbolTableEntry(t->str, ste_const, value);
 	if (!scope.insert(t->str,entry))
-		perror("already declaerd");
+		scanner->file->ReportError("already declaerd");
 	return entry;
 }
 SymbolTableEntry * Parser::parse_id_routine(TOKEN * t,j_type returnType,int count) {
 	SymbolTableEntry * entry;
 	entry = new SymbolTableEntry(t->str, ste_routine,returnType,count);
 	if (!scope.insert(t->str,entry))
-		perror("already declaerd");
+		scanner->file->ReportError("already declaerd");
 	return entry;
 }
 j_type Parser::parse_type() {
@@ -72,7 +72,7 @@ j_type Parser::parse_type() {
 		return type_boolean;
 	}
 	else {
-		throw new exception("expected type");
+		scanner->file->ReportError("expected type");
 	}
 }
 ast_list * Parser::parse_decl_list()
@@ -107,11 +107,12 @@ AST * Parser::parse_decl()
 					return make_ast_node(5, ast_routine_decl, entry, list_formal, returnType, body);
 				}
 				else {
-					throw new exception();
+					
+					scanner->file->ReportError("expected colon");
 				}
 		}
 		else {
-			throw new exception();
+			scanner->file->ReportError("expected identifier");
 		}
 	}
 	else if(match(getCurrentToken(),kw_procedure)){
@@ -127,7 +128,7 @@ AST * Parser::parse_decl()
 					return make_ast_node(5, ast_routine_decl, entry, list_formal, returnType, body);
 		}
 		else {
-			throw new exception();
+			scanner->file->ReportError("expected identifier");
 		}
 		
 	}
@@ -139,7 +140,7 @@ ast_list * Parser::parse_formal_list(int &count) {
 		return parse_formal_list_bar(count);
 	}
 	else
-		throw new exception();
+		scanner->file->ReportError("expected left parantheses");
 
 }
 ast_list * Parser::parse_formal_list_bar(int & count) {
@@ -152,7 +153,7 @@ ast_list * Parser::parse_formal_list_bar(int & count) {
 		return list;
 	}
 	else {
-		throw new exception();
+		scanner->file->ReportError("expected right  parantheses");
 	}
 	
 }
@@ -170,15 +171,15 @@ ast_list * Parser::parse_formals(int & count) {
 					return const_ast(node, list);
 				}
 				else {
-					throw new exception("expected colon");
+					scanner->file->ReportError("expected colon");
 				}
 			}
 			else {
-				throw new exception("expected identifier");
+				scanner->file->ReportError("expected identifier");
 			}
 		}
 		else {
-			throw new exception("expected var");
+			scanner->file->ReportError("expected var");
 		}
 
 }
@@ -198,11 +199,11 @@ ast_list * Parser::parse_formals_bar(int &  count) {
 					return const_ast(node, list);
 				}
 				else {
-					throw new exception("expected colon");
+					scanner->file->ReportError("expected colon");
 				}
 			}
 			else {
-				throw new exception("expected identifer");
+				scanner->file->ReportError("expected identifer");
 			}
 		}
 		}
@@ -217,7 +218,7 @@ AST * Parser::parse_block(){
 				return make_ast_node(3,ast_block, var_list, stmt_list);
 			}
 			else {
-				throw new exception();
+				scanner->file->ReportError("expected end");
 			}
 		}
     return NULL;
@@ -246,12 +247,12 @@ AST * Parser::parse_var_decl() {
 				return make_ast_node(3,ast_var_decl,entry,varType);
 			}
 			else {
-				throw new exception();
+				scanner->file->ReportError("expected colon");
 			}
 
 		}
 		else {
-			throw new exception();
+			scanner->file->ReportError("expected id");
 		}
 	}
 	else if(match(getCurrentToken(),kw_constant)){
@@ -266,13 +267,13 @@ AST * Parser::parse_var_decl() {
 				return make_ast_node(3,ast_const_decl,entry,value);
 			}
 			else {
-				throw new exception();
+				scanner->file->ReportError("expected =");
 			}
 
 		}
 		else
 		{
-			throw new exception();
+			scanner->file->ReportError("expected id");
 		}
 	}
 	return  NULL;
@@ -297,7 +298,7 @@ AST * Parser::parse_call_assgin(TOKEN * id) {
 			AST * exp = parse_expr();
 			SymbolTableEntry * e = scope.getFirstOcc(id->str);
 			if (e->entry_type == ste_undefined) {
-				throw new exception("undefined variable ");
+				scanner->file->ReportError("undefined variable ");
 			}
 			else {
 				return make_ast_node(3, ast_assign, e, exp);
@@ -309,10 +310,10 @@ AST * Parser::parse_call_assgin(TOKEN * id) {
 			ast_list * args = parse_arg_list(count);
 			SymbolTableEntry * e = scope.getFirstOcc(id->str);
 			if (e->entry_type == ste_undefined) {
-				throw new exception("undefined function ");
+				scanner->file->ReportError("undefined function ");
 			}
 			else if (count != e->f.routine.formalNumber) {
-				throw new exception("wrong number of arguments");
+				scanner->file->ReportError("wrong number of arguments");
 			}
 			else {
 				return make_ast_node(3,ast_call, e, args);
@@ -323,20 +324,38 @@ AST * Parser::parse_ifstmt() {
 		AST * exp = parse_expr();
 		if (match(getCurrentToken(), kw_then)) {
 			AST * consequance = parse_stmt();
-			if (match(getCurrentToken(), kw_fi)) {
-				return make_ast_node(4, ast_if, exp,consequance,NULL);
-			}
-			// ifstmt_bar
-			else if(match(getCurrentToken(),kw_else)) {
-				AST * alt = parse_stmt();
-				return make_ast_node(4, ast_if,exp, consequance, alt);
+			if (match(getCurrentToken(), lx_semicolon)) {
+				if (match(getCurrentToken(), kw_fi)) {
+					return make_ast_node(4, ast_if, exp, consequance, NULL);
+				}
+				// ifstmt_bar
+				else if (match(getCurrentToken(), kw_else)) {
+					AST * alt = parse_stmt();
+					if (match(getCurrentToken(), lx_semicolon)) {
+						if (match(getCurrentToken(), kw_fi)) {
+							return make_ast_node(4, ast_if, exp, consequance, alt);
+						}
+						else {
+
+							scanner->file->ReportError("expected else or fi");
+						}
+					}
+					else {
+
+						scanner->file->ReportError("expected ;");
+					}
+				}
+				else {
+					scanner->file->ReportError("expected else or fi");
+				}
 			}
 			else {
-				throw new exception("expected else or fi");
+
+				scanner->file->ReportError("expected ;");
 			}
 		}
 		else {
-			throw new exception("expected then");
+			scanner->file->ReportError("expected then");
 		}
 }
 AST * Parser::parse_stmt() {
@@ -351,13 +370,24 @@ AST * Parser::parse_stmt() {
 		AST * predeict = parse_expr();
 		if (match(getCurrentToken(), kw_do)) {
 			AST * body = parse_stmt();
-			if (match(getCurrentToken(), kw_od))
-				return make_ast_node(4, ast_while, predeict, body);
-			throw new exception();
+			if (match(getCurrentToken(), lx_semicolon)) {
+				if (match(getCurrentToken(), kw_od)) {
+					return make_ast_node(4, ast_while, predeict, body);
+				}
+				else {
+
+					scanner->file->ReportError("expected od");
+				}
+			}
+			else {
+				scanner->file->ReportError("expected ;");
+			}
 		}
 		else {
-			throw new exception();
-		}
+
+				scanner->file->ReportError("expected do");
+			}
+	
 	}
 	else if (match(getCurrentToken(), kw_for)) {
 		TOKEN * id = getCurrentToken();
@@ -378,59 +408,65 @@ AST * Parser::parse_stmt() {
 					if (match(getCurrentToken(), kw_od))
 						return make_ast_node(5, ast_for,lower->f.a_assign.lhs, lower, upper, body);
 					else {
-						throw new exception("expected od");
+						scanner->file->ReportError("expected od");
 					}
 				}
 				else {
-					throw new exception("expected do");
+					scanner->file->ReportError("expected do");
 				}
 			}
 			else {
-				throw new exception("expected to");
+				scanner->file->ReportError("expected to");
 			}
 		}
 		else {
-			throw new exception("expected an identifier");
+			scanner->file->ReportError("expected an identifier");
 		}
 	}
 	else if (match(getCurrentToken(), kw_read)) {
 		if (match(getCurrentToken(), lx_lparen)) {
 			TOKEN * id = getCurrentToken();
 			if (match(id, lx_identifier)) {
-				SymbolTableEntry * entry = scope.find(id->str);
+				SymbolTableEntry * entry = scope.getFirstOcc(id->str);
+				if (entry->entry_type == ste_undefined) {
+					scanner->file->ReportError("undefined variable");
+				}
 				if (match(getCurrentToken(), lx_rparen)) {
 					return make_ast_node(2, ast_read, entry);
 				}
 				else {
-					throw new exception("expect right parantheses");
+					scanner->file->ReportError("expect right parantheses");
 				}
 			}
 			else {
-				throw new exception("expect an indentifier");
+				scanner->file->ReportError("expect an indentifier");
 			}
 		}
 		else {
-			throw new exception("expect a left parantheses");
+			scanner->file->ReportError("expect a left parantheses");
 		}
 	}
 	else if (match(getCurrentToken(), kw_write)) {
 		if (match(getCurrentToken(), lx_lparen)) {
 			TOKEN * id = getCurrentToken();
 			if (match(id, lx_identifier)) {
-				SymbolTableEntry * entry = scope.find(id->str);
+				SymbolTableEntry * entry = scope.getFirstOcc(id->str);
+				if (entry->entry_type == ste_undefined) {
+					scanner->file->ReportError("undefined variable");
+				}
 				if (match(getCurrentToken(), lx_rparen)) {
 					return make_ast_node(2, ast_write, entry);
 				}
 				else {
-					throw new exception("expect right parantheses");
+					scanner->file->ReportError("expect right parantheses");
 				}
 			}
 			else {
-				throw new exception("expect an indentifier");
+				scanner->file->ReportError("expect an indentifier");
 			}
 		}
 		else {
-			throw new exception("expect a left parantheses");
+			scanner->file->ReportError("expect a left parantheses");
 		}
 	}
 	else if (match(getCurrentToken(), kw_return)) {
@@ -441,16 +477,17 @@ AST * Parser::parse_stmt() {
 			}
 			else {
 
-			throw new exception("expect right parantheses");
+			scanner->file->ReportError("expect right parantheses");
 			}
 		}
 		else {
-			throw new exception("expect left parantheses");
+			scanner->file->ReportError("expect left parantheses");
 		}
 	}
-	else {
+	else if(getCurrentToken()->type==kw_begin){
 		return parse_block();
 	}
+	return NULL;
 }
 
 ast_list * Parser::parse_arg_list(int &count) {
@@ -458,7 +495,8 @@ ast_list * Parser::parse_arg_list(int &count) {
 		return parse_arg_list_bar(count);
 	}
 	else
-		throw new exception();
+		//scanner->file->ReportError("expcted left parantheses");
+		return NULL;
 
 }
 ast_list * Parser::parse_arg_list_bar(int & count) {
@@ -471,7 +509,7 @@ ast_list * Parser::parse_arg_list_bar(int & count) {
 		return list;
 	}
 	else {
-		throw new exception();
+		scanner->file->ReportError("expected left para");
 	}
 	
 }
@@ -585,7 +623,7 @@ AST * Parser::parse_arith_bar(AST * arith_l) {
 AST * Parser::parse_unary(){
 	AST_type type;
 	AST * f;
-	if (match(getCurrentToken(), lx_not)) {
+	if (match(getCurrentToken(), kw_not)) {
 		type = ast_not;
 		f = parse_f();
 		return make_ast_node(2, type, f);
@@ -597,10 +635,37 @@ AST * Parser::parse_unary(){
 	}
 	return parse_f();
 }
+AST * Parser::parse_call_id(TOKEN * id) {
+
+
+	if (getCurrentToken()->type==lx_lparen) {
+		int count = 0;
+		ast_list * args = parse_arg_list(count);
+		SymbolTableEntry * e = scope.getFirstOcc(id->str);
+		if (e->entry_type == ste_undefined) {
+			scanner->file->ReportError("undefined function ");
+		}
+		else if (count != e->f.routine.formalNumber) {
+			scanner->file->ReportError("wrong number of arguments");
+		}
+		else {
+			return make_ast_node(3, ast_call, e, args);
+		}
+	}
+		else {
+			SymbolTableEntry * e = scope.getFirstOcc(id->str);
+			if (e->entry_type == ste_undefined) {
+				scanner->file->ReportError("undefined variable ");
+			}
+			else {
+				return make_ast_node(2, ast_var, e);
+			}
+			}
+}
 AST * Parser::parse_f() {
 	TOKEN * t = getCurrentToken();
 	if (match(t, lx_identifier)) {
-		return parse_call_assgin(t);
+		return parse_call_id(t);
 	}
 	else if (match(getCurrentToken(), lx_integer)) {
 		return make_ast_node(2,ast_integer, t->value);
@@ -622,10 +687,10 @@ AST * Parser::parse_f() {
 			return expr;
 		}
 		else {
-			throw new exception("expected right paranthese");
+			scanner->file->ReportError("expected right paranthese");
 		}
 	}
 	else {
-		throw new exception("invalid expression");
+		scanner->file->ReportError("invalid expression");
 	}
 }

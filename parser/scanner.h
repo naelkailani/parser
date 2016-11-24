@@ -23,7 +23,7 @@ typedef enum
 	lx_lparen, lx_rparen, lx_lbracket, lx_rbracket,
 	lx_colon, lx_dot, lx_semicolon, lx_comma,lx_eq,
 	lx_plus, lx_minus, lx_star, lx_slash,
-	 lx_neq, lx_lt,lx_gt, lx_le,  lx_ge,lx_colon_eq,lx_eof,lx_not
+	 lx_neq, lx_lt,lx_gt, lx_le,  lx_ge,lx_colon_eq,lx_eof
 }
 LEXEME_TYPE;
 

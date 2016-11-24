@@ -43,6 +43,7 @@ public:
 	AST * parse_arith();
 	AST * parse_arith_bar(AST * unary);
 	AST * parse_unary();
+	AST * parse_call_id(TOKEN * id);
 	AST * parse_f();
 	ast_list * parse_formal_list_bar(int &);
 	ast_list * parse_formals_bar(int &);

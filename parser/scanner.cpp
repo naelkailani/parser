@@ -4,7 +4,7 @@
 #include<queue>
 using namespace std;
 char *keyword []= {
-"and", "begin", "bool", "by", "constant",
+"and", "begin", "boolean", "by", "constant",
 "do", "else", "end", "false", "fi", "float", "for", "from",
 "function", "if", "integer", "not", "od", "or", "procedure",
 "program", "read", "return", "string", "then", "to", "true",
@@ -208,23 +208,17 @@ TOKEN * SCANNER::Scan() {
 		
 	c = file->GetChar();
 	TOKEN * t=NULL;
-	if (c == EOF) {
-		t = new TOKEN();
-		t->type = lx_eof;
-		return t;
-	}
-	else {
-		while (q->empty()) {
+while (q->empty()) {
 			if (islegalIdStart(c)) {
 				file->UngetChar(c);
 				t = getId(*file);
 				toKeyWord(t);
 				q->push(t);
 				if (t->type == lx_identifier) {
-					cout << "identifier : " << t->str.data() << endl;
+					//cout << "identifier : " << t->str.data() << endl;
 				}
 				else {
-					cout << "key word : " << t->str.data() << endl;
+					//cout << "key word : " << t->str.data() << endl;
 				}
 
 			}
@@ -232,15 +226,20 @@ TOKEN * SCANNER::Scan() {
 				file->UngetChar(c);
 				t = getNumber(*file);
 				q->push(t);
-				if (t->type == lx_integer)
-					cout << "integer :" << t->value << endl;
-				else
-					cout << "float :" << t->float_value << endl;
+				if (t->type == lx_integer) {
+
+					//cout << "integer :" << t->value << endl;
+				}
+				else {
+					cout << "";
+
+					//cout << "float :" << t->float_value << endl;
+				}
 			}
 			else if (c == '\"') {
 				t = getString(*file);
 				q->push(t);
-				cout << "string :" << t->str.data() << endl;
+				//cout << "string :" << t->str.data() << endl;
 
 			}
 			else if (isOperator(c)) {
@@ -298,7 +297,7 @@ TOKEN * SCANNER::Scan() {
 					t->type = (LEXEME_TYPE)(34 + pos);
 					q->push(t);
 				}
-				cout << "operator: " << c << endl;
+				//cout << "operator: " << c << endl;
 			}
 			else if (c == '#') {
 				c = file->GetChar();
@@ -314,6 +313,11 @@ TOKEN * SCANNER::Scan() {
 				//cout << "space " << endl;
 				// d nothing
 			}
+			else if (c == EOF) {
+				t = new TOKEN();
+				t->type = lx_eof;
+				return t;
+			}
 			else {
 				file->ReportError("unvalid character");
 				exit(-1);
@@ -322,7 +326,7 @@ TOKEN * SCANNER::Scan() {
 		}
 
 		
-	}
+	
 	
 	file->UngetChar(c);
 	return q->front();

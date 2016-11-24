@@ -51,9 +51,9 @@ using namespace std;
 		cout<<t->f.constant.str_value<<endl;
         
 		cout<<t->f.constant.value<<endl;*/
-		Parser parser("test1.txt");
+		Parser parser("test4.txt");
 		ast_list * a = parser.parse_decl_list();
-		FILE * fp = fopen("new.txt", "w");
+		FILE * fp = fopen("new2.txt", "w");
 		print_ast_list(fp, a, "", 0);
 
 		std::cout << "Hello, World!\n";

@@ -422,7 +422,7 @@ switch (n->type)
 		fprintf (f, "EOF");
 		break;
 	default:
-        perror("Unknown AST node type\n");
+        perror("");
   } 
 }
 ///////////////////////////////////////////////////
